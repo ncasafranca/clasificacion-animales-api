@@ -1,0 +1,8 @@
+spring:
+  cloud:
+    azure:
+      cosmos:
+        database: clasificaciondb
+        populate-query-metrics: true
+        endpoint: https://myappdbcosmosupc.documents.azure.com:443/
+        key: P3R6MbzAsmuoKatxvEY40feauiUquXheLc8vABnQz7WpP2MElN0bn4P4J8rk3O3FaiaA2zniWCEBACDb0QXVRw==
