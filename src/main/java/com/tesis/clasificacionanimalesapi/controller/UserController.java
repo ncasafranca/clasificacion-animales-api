@@ -16,6 +16,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UserController {
     @Autowired
     UserRepository userRepository;
@@ -33,12 +34,13 @@ public class UserController {
     public ResponseEntity<User> createUser
     (@RequestBody User user) {
         try {
-            User newuser = new User(user.getFirstName(),
-                    user.getLastName(), user.getRole(), user.getDocumentNumber(), user.getEmail(), encodeEncryptUserPassword(user.getPassword()),
-                    user.getPhoneNumber());
-            userRepository.save(newuser);
-            return new ResponseEntity<>(newuser,
-                    HttpStatus.CREATED);
+                User newuser = new User(user.getFirstName(),
+                        user.getLastName(), user.getRole(), user.getDocumentNumber(), user.getEmail(), encodeEncryptUserPassword(user.getPassword()),
+                        encodeEncryptUserPassword(user.getRpassword()), user.getPhoneNumber());
+                userRepository.save(newuser);
+                return new ResponseEntity<>(newuser,
+                        HttpStatus.CREATED);
+
         } catch (Exception e) {
             throw new UnKnownException(e.getMessage());
         }
@@ -59,13 +61,30 @@ public class UserController {
             _user.setRole(user.getRole());
             _user.setDocumentNumber(user.getDocumentNumber());
             _user.setEmail(user.getEmail());
-            _user.setPassword(user.getPassword());
+            _user.setPassword(encodeEncryptUserPassword(user.getPassword()));
+            _user.setRpassword(encodeEncryptUserPassword(user.getRpassword()));
             _user.setPhoneNumber(user.getPhoneNumber());
             return new ResponseEntity<>
                     (userRepository.save(_user), HttpStatus.OK);
         } else {
             throw new UserNotFound("Invalid User Id");
         }
+    }
+
+    // Get user by ID
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserByID
+    (@PathVariable("id") String id) {
+
+        Optional<User> userdata = userRepository
+                .findById(id);
+        if (userdata.isPresent()) {
+            return new ResponseEntity<>(userdata.get(),
+                    HttpStatus.OK);
+        } else {
+            throw new UserNotFound("Invalid User Id");
+        }
+
     }
 
     // Get all Users
