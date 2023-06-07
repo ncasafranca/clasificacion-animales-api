@@ -4,6 +4,7 @@ import com.tesis.clasificacionanimalesapi.exception.UnKnownException;
 import com.tesis.clasificacionanimalesapi.exception.UserNotFound;
 import com.tesis.clasificacionanimalesapi.model.User;
 import com.tesis.clasificacionanimalesapi.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/v1/users")
 @CrossOrigin(origins = "http://localhost:4200")
+@AllArgsConstructor
 public class UserController {
     @Autowired
     UserRepository userRepository;

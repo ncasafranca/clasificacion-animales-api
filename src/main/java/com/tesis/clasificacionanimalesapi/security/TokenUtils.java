@@ -5,12 +5,14 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class TokenUtils {
     private final static String ACCESS_TOKEN_SECRET = "*0gYof4pea990NYz*58A52aCw28a8Z^O";
     private final static Long ACCESS_TOKEN_VALIDITY_SECONDS = 2_592_000L;

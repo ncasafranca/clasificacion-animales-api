@@ -1,5 +1,7 @@
-package com.tesis.clasificacionanimalesapi.security;
+package com.tesis.clasificacionanimalesapi.config;
 
+import com.tesis.clasificacionanimalesapi.security.JWTAuthenticationFilter;
+import com.tesis.clasificacionanimalesapi.security.JWTAuthorizationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +18,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @AllArgsConstructor
 public class WebSecurityConfig {
-
     private final UserDetailsService userDetailsService;
     private final JWTAuthorizationFilter jwtAuthorizationFilter;
 
@@ -24,11 +25,14 @@ public class WebSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
         JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter();
         jwtAuthenticationFilter.setAuthenticationManager(authManager);
-        jwtAuthenticationFilter.setFilterProcessesUrl("/login");
+        jwtAuthenticationFilter.setFilterProcessesUrl("/api/v1/login");
 
         return http
+                .cors()
+                .and()
                 .csrf().disable()
-                .authorizeRequests()
+                .authorizeHttpRequests()
+                .antMatchers("/api/v1/user").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -53,5 +57,4 @@ public class WebSecurityConfig {
     PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
 }
