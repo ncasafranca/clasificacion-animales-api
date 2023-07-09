@@ -1,19 +1,19 @@
 package com.tesis.clasificacionanimalesapi.controller;
 
 import com.tesis.clasificacionanimalesapi.exception.UnKnownException;
+import com.tesis.clasificacionanimalesapi.exception.UserDuplicated;
 import com.tesis.clasificacionanimalesapi.exception.UserNotFound;
 import com.tesis.clasificacionanimalesapi.model.User;
 import com.tesis.clasificacionanimalesapi.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -22,7 +22,6 @@ import java.util.Optional;
 public class UserController {
     @Autowired
     UserRepository userRepository;
-
     public String encodeEncryptUserPassword(String password)
     {
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -36,13 +35,16 @@ public class UserController {
     public ResponseEntity<User> createUser
     (@RequestBody User user) {
         try {
-                User newuser = new User(user.getFirstName(),
+            Optional<User> userdata =  userRepository.findOneByEmail(user.getEmail());
+            if (userdata.isPresent()) {
+                return new ResponseEntity<>(HttpStatus.FOUND);
+            }
+            User newuser = new User(user.getFirstName(),
                         user.getLastName(), user.getRole(), user.getDocumentNumber(), user.getEmail(), encodeEncryptUserPassword(user.getPassword()),
                         encodeEncryptUserPassword(user.getRpassword()), user.getPhoneNumber());
-                userRepository.save(newuser);
-                return new ResponseEntity<>(newuser,
+            userRepository.save(newuser);
+            return new ResponseEntity<>(newuser,
                         HttpStatus.CREATED);
-
         } catch (Exception e) {
             throw new UnKnownException(e.getMessage());
         }
@@ -53,7 +55,6 @@ public class UserController {
     public ResponseEntity<User> updateUser
     (@PathVariable("id") String id,
      @RequestBody User user) {
-
         Optional<User> userdata = userRepository
                 .findById(id);
         if (userdata.isPresent()) {
@@ -77,7 +78,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserByID
     (@PathVariable("id") String id) {
-
         Optional<User> userdata = userRepository
                 .findById(id);
         if (userdata.isPresent()) {
@@ -86,13 +86,11 @@ public class UserController {
         } else {
             throw new UserNotFound("Invalid User Id");
         }
-
     }
 
     // Get all Users
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
-
         try {
             List<User> users = new ArrayList<User>();
             userRepository.findAll().forEach(users::add);
@@ -101,7 +99,6 @@ public class UserController {
         } catch (Exception e) {
             throw new UnKnownException(e.getMessage());
         }
-
     }
 
     // Delete user
@@ -119,5 +116,4 @@ public class UserController {
             throw new UserNotFound("Invalid User Id");
         }
     }
-
 }

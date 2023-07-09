@@ -8,3 +8,6 @@ import java.util.Optional;
 public interface UserRepository extends CosmosRepository<User, String> {
     Optional<User> findOneByEmail(String email);
 }
+
+
+
